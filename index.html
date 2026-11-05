@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050b14">
+<title>IMMU DAILY</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  background: #050b14;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  padding: 20px;
+  background: #101e30;
+  border-radius: 18px;
+  border: 1px solid #203c59;
+}
+
+h1 {
+  color: #54c8ff;
+}
+
+.date {
+  color: #a9c8df;
+}
+
+.progress-box {
+  margin-top: 20px;
+  padding: 20px;
+  background: #101e30;
+  border-radius: 18px;
+}
+
+.progress {
+  height: 10px;
+  background: #26394d;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+#bar {
+  width: 0%;
+  height: 100%;
+  background: #54c8ff;
+}
+
+.task {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 17px;
+  background: #101e30;
+  border: 1px solid #203c59;
+  border-radius: 14px;
+}
+
+.task span {
+  color: #54c8ff;
+  font-size: 13px;
+}
+
+.task label {
+  flex: 1;
+}
+
+.task input {
+  width: 22px;
+  height: 22px;
+  accent-color: #54c8ff;
+}
+
+.done label {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+footer {
+  text-align: center;
+  margin-top: 30px;
+  color: #7c9bb5;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>IMMU DAILY</h1>
+  <h2>Welcome, Immu 👋</h2>
+  <p class="date" id="date"></p>
+  <p>Your daily routine starts here.</p>
+</header>
+
+<div class="progress-box">
+  <h3>Daily Progress</h3>
+  <h2 id="percent">0%</h2>
+  <div class="progress">
+    <div id="bar"></div>
+  </div>
+  <p id="count">0 / 15 Completed</p>
+</div>
+
+<h2>📅 My Daily Routine</h2>
+
+<div id="tasks"></div>
+
+<footer>
+  <p>Stay Consistent • Pray • Study • Grow</p>
+  <p>© 2026 IMMU DAILY</p>
+</footer>
+
+<script>
+const activities = [
+["7:00 – 7:30 AM","Quran + Breakfast"],
+["7:30 – 9:00 AM","Lesson 01"],
+["9:00 – 9:15 AM","Break"],
+["9:15 – 10:45 AM","Lesson 02"],
+["10:45 – 11:45 AM","Rest + Personal Time"],
+["11:45 AM – 12:15 PM","Dhuhr"],
+["12:15 – 12:45 PM","Lunch"],
+["12:45 – 2:15 PM","Lesson 03"],
+["2:15 – 3:10 PM","Rest"],
+["3:10 – 3:30 PM","Asr"],
+["3:30 – 5:00 PM","Lesson 04"],
+["5:00 – 5:45 PM","Gaming"],
+["5:57 – 6:15 PM","Maghrib"],
+["6:15 – 6:50 PM","Dinner + Quran"],
+["6:58 – 7:15 PM","Isha"],
+["7:15 – 8:15 PM","Gaming"],
+["8:15 – 9:00 PM","Revision"],
+["9:00 – 9:30 PM","Relax + Sleep Preparation"]
+];
+
+const today = new Date().toLocaleDateString();
+
+document.getElementById("date").textContent = today;
+
+const container = document.getElementById("tasks");
+const storageKey = "immu-daily-" + today;
+
+let completed = JSON.parse(
+  localStorage.getItem(storageKey) || "[]"
+);
+
+activities.forEach((activity, index) => {
+  const div = document.createElement("div");
+  div.className = "task";
+
+  const label = document.createElement("label");
+  label.textContent = activity[1];
+
+  const time = document.createElement("span");
+  time.textContent = activity[0];
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.checked = completed.includes(index);
+
+  if (checkbox.checked) div.classList.add("done");
+
+  checkbox.addEventListener("change", () => {
+    if (checkbox.checked) {
+      if (!completed.includes(index)) completed.push(index);
+      div.classList.add("done");
+    } else {
+      completed = completed.filter(i => i !== index);
+      div.classList.remove("done");
+    }
+
+    localStorage.setItem(storageKey, JSON.stringify(completed));
+    updateProgress();
+  });
+
+  div.append(label, time, checkbox);
+  container.appendChild(div);
+});
+
+function updateProgress() {
+  const total = activities.length;
+  const done = completed.length;
+  const percent = Math.round(done / total * 100);
+
+  document.getElementById("percent").textContent = percent + "%";
+  document.getElementById("bar").style.width = percent + "%";
+  document.getElementById("count").textContent =
+    done + " / " + total + " Completed";
+}
+
+updateProgress();
+</script>
+
+</body>
+</html>
